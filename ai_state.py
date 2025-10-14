@@ -25,12 +25,12 @@ class State:
 
     def moves(self):
         """Returns a list of all possible moves by reducing every active state by 1"""
-        for parentIndex, row in enumerate(self.grid, start=0):
+        for rowIndex, row in enumerate(self.grid, start=0):
             print('\n')
-            for cellIndex, cell in enumerate(row, start=0):
+            for columnIndex, cell in enumerate(row, start=0):
                 if cell > 0:
                     clone = deepcopy(self.grid)
-                    clone[parentIndex][cellIndex] = cell - 1
+                    clone[rowIndex][columnIndex] = cell - 1
                     yield clone
 
     def getNeighbours(self, rowIndex, columnIndex):
