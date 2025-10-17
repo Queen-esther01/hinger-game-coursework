@@ -12,8 +12,6 @@ Includes functions for retrieving safe paths for Task 2
 from ai_state import State
 
 
-
-
 def path_BFS(start,end):
     return
 
