@@ -24,7 +24,7 @@ class State:
         return str(f"{result}")
 
     def moves(self):
-        """Returns a list of all possible moves by reducing every active state by 1"""
+        """Returns a list of all possible states by reducing every active state by 1"""
         for rowIndex, row in enumerate(self.grid, start=0):
             print('\n')
             for columnIndex, cell in enumerate(row, start=0):
@@ -70,7 +70,7 @@ class State:
         for rowIndex, row in enumerate(self.grid, start=0):
             for columnIndex, cell in enumerate(row, start=0):
                 prev_regions = self.numRegions()
-                if self.grid[rowIndex][columnIndex] == 1:
+                if self.grid[rowIndex][columnIndex] >= 1:
                     self.grid[rowIndex][columnIndex] = cell - 1
                     current_regions = self.numRegions()
                     self.grid[rowIndex][columnIndex] = cell + 1
