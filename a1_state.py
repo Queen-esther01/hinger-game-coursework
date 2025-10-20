@@ -24,13 +24,13 @@ class State:
         return str(f"{result}")
 
     def moves(self):
-        """Returns a list of all possible states by reducing every active state by 1"""
-        for rowIndex, row in enumerate(self.grid, start=0):
+        """Returns a list of all possible moves by reducing every active state by 1"""
+        for parentIndex, row in enumerate(self.grid, start=0):
             print('\n')
-            for columnIndex, cell in enumerate(row, start=0):
+            for cellIndex, cell in enumerate(row, start=0):
                 if cell > 0:
                     clone = deepcopy(self.grid)
-                    clone[rowIndex][columnIndex] = cell - 1
+                    clone[parentIndex][cellIndex] = cell - 1
                     yield clone
 
     def getNeighbours(self, rowIndex, columnIndex):
@@ -38,6 +38,7 @@ class State:
         neighbours = []
         for x in range(rowIndex - 1, rowIndex + 2):
             for y in range(columnIndex - 1, columnIndex + 2):
+                # is it not supposed to be + 1
                 if (x, y) == (rowIndex, columnIndex):
                     continue  # skip the cell itself
                 if 0 <= x < len(self.grid) and 0 <= y < len(self.grid[rowIndex]):  # stay inside grid
@@ -70,7 +71,7 @@ class State:
         for rowIndex, row in enumerate(self.grid, start=0):
             for columnIndex, cell in enumerate(row, start=0):
                 prev_regions = self.numRegions()
-                if self.grid[rowIndex][columnIndex] >= 1:
+                if self.grid[rowIndex][columnIndex] == 1:
                     self.grid[rowIndex][columnIndex] = cell - 1
                     current_regions = self.numRegions()
                     self.grid[rowIndex][columnIndex] = cell + 1
@@ -93,6 +94,9 @@ def tester():
     # run moves
     # for n in State(sa).moves():
     #     print(n)
+    
+    # State(sa)??
+    
 
     # run numRegions
     print(f'number of regions: {sa.numRegions()}')

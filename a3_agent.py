@@ -4,12 +4,12 @@ Coursework 001 for: CMP-7058A Artificial Intelligence
 
 Includes functions for retrieving safe paths for Task 2
 
-@author: E6 (100501127)
+@author: E6 (100501127, 100527347)
 @date: 29/09/2025
 
 """
 from copy import deepcopy
-from ai_state import State, tester as tester_state
+from ai_state import State
 
 
 class Agent:
