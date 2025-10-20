@@ -9,7 +9,7 @@ Includes functions for retrieving safe paths for Task 2
 
 """
 from copy import deepcopy
-from ai_state import State
+from a1_state import State
 
 
 class Agent:
