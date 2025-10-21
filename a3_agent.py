@@ -19,38 +19,38 @@ class Agent:
         self.name = name
         self.size = size
 
-    def __str__(self):
+    def __str__(self, state):
         """Returns a readable grid similar to input in brief but without lines"""
         result = ""
-        for row in self.grid:
+        for row in state:
             result += ' '.join(str(cell) for cell in row)
             result += '\n'
         return str(f"{result}")
 
-    def get_all_valid_moves(self, state):
+    def is_hinger(self, state, move):
+        """Check if this move is a hinger cell"""
+        if state[move[0]][move[1]] != 1:
+            return False
+
+        # Check if removing cell increases regions
+        prev_regions = State(deepcopy(state)).numRegions()
+        next_state = self.apply_action(move, state)
+        new_regions = State(deepcopy(next_state)).numRegions()
+
+        return new_regions > prev_regions
+
+    @staticmethod
+    def get_all_valid_moves(state):
+        """Return a list of all valid moves"""
         result = []
         for rowIndex, row in enumerate(state, start=0):
             for columnIndex, cell in enumerate(row, start=0):
                 if cell > 0:
-                    result.append([rowIndex, columnIndex])
+                    result.append((rowIndex, columnIndex))
         return result
 
-    def evaluate(self, prev_state, new_state):
-        """Return 1 if active regions increased, 0 otherwise"""
-        prev_state_clone = deepcopy(prev_state)
-        prev_state_class = State(prev_state_clone)
-        prev_regions = prev_state_class.numRegions()
-
-        new_state_clone = deepcopy(new_state)
-        new_state_class = State(new_state_clone)
-        new_regions = new_state_class.numRegions()
-
-        if new_regions > prev_regions:
-            return 1
-        else:
-            return 0
-
-    def game_over(self, state):
+    @staticmethod
+    def game_over(state):
         """Return true if game is over ie if there are no active cells"""
         for rowIndex, row in enumerate(state, start=0):
             for columnIndex, cell in enumerate(row, start=0):
@@ -58,39 +58,46 @@ class Agent:
                     return False
         return True
 
-    def apply_action(self, move, state):
+    @staticmethod
+    def apply_action(move, state):
         """Return a new state after applying the action"""
         clone = deepcopy(state)
         clone[move[0]][move[1]] = clone[move[0]][move[1]] - 1
         return clone
 
-    def minimax(self, state, depth, maximizing_player, prev_state=None):
+    def minimax(self, state, depth, maximizing_player):
         """Return best move based on minimax"""
-        # The base case that break recursion
-        if depth == 0 or self.game_over(state):
-            if prev_state is None:
-                return 0, None
-            return self.evaluate(state, prev_state), None
+        # The base cases that break recursion
+        if self.game_over(state):
+            return 0, None
+
+        # Return the winning move immediately if any
+        for move in self.get_all_valid_moves(state):
+            if self.is_hinger(state, move):
+                if maximizing_player:
+                    return 10000, move
+                else:
+                    return -10000, move
 
         if maximizing_player:
-            max_eval = -1
+            max_eval = float('inf')
             best_move = None
             for move in self.get_all_valid_moves(state):
                 next_state = self.apply_action(move, state)
-                eval, _ = self.minimax(next_state, depth - 1, False, state)
-                # print(f"Trying move {move} max player, eval score = {eval}")
+                eval, _ = self.minimax(next_state, depth - 1, False)
+                # print(f"MAX: move {move}, eval={eval}, current_best={max_eval}")
                 if eval > max_eval:
                     max_eval = eval
                     best_move = move
             return max_eval, best_move
 
         else:  # minimizing player
-            min_eval = 1
+            min_eval = -float('inf')
             best_move = None
             for move in self.get_all_valid_moves(state):
                 next_state = self.apply_action(move, state)
-                eval, _ = self.minimax(next_state, depth - 1, True, state)
-                # print(f"Trying move {move} min player, eval score = {eval}")
+                eval, _ = self.minimax(next_state, depth - 1, True)
+                # print(f"MIN: move {move}, eval={eval}, current_best={min_eval}")
                 if eval < min_eval:
                     min_eval = eval
                     best_move = move
@@ -100,20 +107,22 @@ class Agent:
         """Return a move based on alphabeta"""
         return
 
-    def move(self, state, mode='minimax'):
-        """Return a move based on the mode"""
-        # print(f"row {len(state)} column {len(state[0])}")
-        # print(f"size {self.size}")
+    def move(self, state, mode='minimax', maximizing_player=True):
+        """Return a move based on the mode, depth is how many moves deep to search"""
         assert (len(state) == self.size[0])
         assert (len(state[0]) == self.size[1])
+        assert(mode in self.modes)
         if mode not in self.modes:
             return None
         if mode == 'minimax':
-            score, best_move = self.minimax(state, depth=4, maximizing_player=True)
-            print(f'score: {score} best move: {best_move}')
+            score, best_move = self.minimax(state, depth=1, maximizing_player=maximizing_player)
+            if best_move is None:
+                return self.get_all_valid_moves(state)[0]
             return best_move
         elif mode == 'alphabeta':
             return self.alphabeta(state)
+        else:
+            return self.get_all_valid_moves(state)[0]
 
 
 def tester():
@@ -122,14 +131,23 @@ def tester():
         [0, 0, 0],
     ]
     start = [
-        [0, 1, 0, 0, 1],
+        [1, 1, 0, 0, 1],
         [1, 1, 0, 0, 0],
         [0, 0, 1, 1, 1],
         [0, 0, 0, 1, 1]
     ]
-    # state = State(start)
-    print(Agent((4,5)).move(start))
-    # print(tester_state())
+    start = [
+        [0, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1],
+        [0, 0, 0, 1, 1]
+    ]
+    start = [
+        [1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1],
+    ]
+    # print(Agent((2, 3)).move(start))
+    print(Agent((2, 5)).move(start))
 
 if __name__ == '__main__':
     tester()

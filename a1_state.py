@@ -94,10 +94,6 @@ def tester():
     # run moves
     # for n in State(sa).moves():
     #     print(n)
-    
-    # State(sa)??
-    
-
     # run numRegions
     print(f'number of regions: {sa.numRegions()}')
 
