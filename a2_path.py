@@ -73,40 +73,35 @@ def path_BFS(start,end):
     return flat
 
 def path_DFS(start,end):
-    # The queue stores tuples containing the current_state_grid and list of grid states in the path
     queue = [(start, [start])]
 
-    # We use a set to keep track of visited *grid states* to prevent cycles and re-visits.
-    # Grids must be converted to an immutable type i.e a tuple of tuples to be stored in a set.
-    def grid_to_tuple(grid):
+
+    def grid_tuple(grid):
         return tuple(map(tuple, grid))
 
-    visited = {grid_to_tuple(start)}
+    visited = {grid_tuple(start)}
 
     while queue:
-        current_grid, path = queue.pop()  # DFS: LIFO pop for the deepest state
+        currentgrid, path = queue.pop()  # DFS: LIFO pop for the deepest state
 
-        # We check if the presentr state is the goal
-        if current_grid == end:
+
+        if currentgrid == end:
             return path  # The goal has been reached, search now stops, returns path
 
-        # Produce all possible next states (moves) from the current state
-        current_state = State(current_grid)
+        currentstate = State(currentgrid)
 
-        for next_grid in current_state.moves():
+        for nextgrid in currentstate.moves():
 
-            next_grid_tuple = grid_to_tuple(next_grid)
+            nextgridtuple = grid_tuple(nextgrid)
 
-            if next_grid_tuple not in visited:
-                visited.add(next_grid_tuple)
+            if nextgridtuple not in visited:
+                visited.add(nextgridtuple)
 
-                new_path = path + [next_grid]
+                newpath = path + [nextgrid]
 
-                # We then push the new state and its path onto the stack
-                # The search continues from this new, deeper state (depth first)
-                queue.append((next_grid, new_path))
+                queue.append((nextgrid, newpath))
 
-    # If the stack is empty and the goal was not found
+    # If the stack is empty and the set goal was not found
     return None
 
 def path_IDDFS(start, end):
