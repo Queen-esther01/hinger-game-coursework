@@ -103,9 +103,51 @@ class Agent:
                     best_move = move
             return min_eval, best_move
 
-    def alphabeta(self, state):
-        """Return a move based on alphabeta"""
-        return
+    def alphabeta(self, state, depth, maximizing_player=True, alpha=float('-inf'), beta=float('inf')):
+        """Return best move based on alphabeta algorithm"""
+        # The base cases that break recursion
+        if self.game_over(state):
+            return 0, None
+
+        # Return the winning move immediately if any
+        for move in self.get_all_valid_moves(state):
+            if self.is_hinger(state, move):
+                if maximizing_player:
+                    return 10000, move
+                else:
+                    return -10000, move
+
+        if maximizing_player:
+            max_eval = float('-inf')
+            best_move = None
+            for move in self.get_all_valid_moves(state):
+                next_state = self.apply_action(move, state)
+                eval, _ = self.alphabeta(next_state, depth - 1, False, alpha, beta)
+                # print(f"MAX: move {move}, eval={eval}, current_best={max_eval}")
+                if eval > max_eval:
+                    max_eval = eval
+                    best_move = move
+                alpha = max(alpha, eval)
+                # Here we cutoff since we know there are no better moves
+                if beta <= alpha:
+                    break
+            return max_eval, best_move
+
+        else:  # minimizing player
+            min_eval = -float('inf')
+            best_move = None
+            for move in self.get_all_valid_moves(state):
+                next_state = self.apply_action(move, state)
+                eval, _ = self.minimax(next_state, depth - 1, True)
+                # print(f"MIN: move {move}, eval={eval}, current_best={min_eval}")
+                if eval < min_eval:
+                    min_eval = eval
+                    best_move = move
+                beta = max(beta, eval)
+                # Here we cutoff since we know there are no better moves
+                if beta <= alpha:
+                    break
+            return min_eval, best_move
 
     def move(self, state, mode='minimax', maximizing_player=True):
         """Return a move based on the mode, depth is how many moves deep to search"""
@@ -120,7 +162,10 @@ class Agent:
                 return self.get_all_valid_moves(state)[0]
             return best_move
         elif mode == 'alphabeta':
-            return self.alphabeta(state)
+            score, best_move = self.alphabeta(state, depth=1, maximizing_player=maximizing_player)
+            if best_move is None:
+                return self.get_all_valid_moves(state)[0]
+            return best_move
         else:
             return self.get_all_valid_moves(state)[0]
 
@@ -146,7 +191,6 @@ def tester():
         [1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1],
     ]
-    # print(Agent((2, 3)).move(start))
     print(Agent((2, 5)).move(start))
 
 if __name__ == '__main__':
