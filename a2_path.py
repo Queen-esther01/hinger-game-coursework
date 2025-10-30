@@ -53,7 +53,6 @@ def dls_path(current_grid, end, limit, path):
 def path_BFS(start,end):
     """ returns safe paths from start to end """
     checks(start,end)
-
     queue = [([0,0])]
     visited = set()
     flat = []
