@@ -10,7 +10,6 @@ Includes functions for retrieving safe paths for Task 2
 """
 
 import sys
-
 from copy import deepcopy
 from a1_state import State
 import heapq
@@ -41,17 +40,14 @@ def dls_path(current_grid, end, limit, path):
         return path
     
     if len(path) > limit:
-
         return None  # Path is too long, stop search
-
     current_state = State(current_grid)
     
     for next_grid in current_state.moves():
         if next_grid not in path: 
             solution = dls_path(next_grid, end, limit, path + [next_grid])
             if solution is not None:
-                return solution
-                    
+                return solution                    
         return None
 
 def path_BFS(start,end):
@@ -99,33 +95,24 @@ def path_BFS(start,end):
 def path_DFS(start,end):
     checks(start, end)
     queue = [(start, [start])]
-
     visited = {grid_tuple(start)}
 
     while queue:
         currentgrid, path = queue.pop()  # DFS: LIFO pop for the deepest state
-
-
         if currentgrid == end:
             return path  # The goal has been reached, search now stops, returns path
 
         currentstate = State(currentgrid)
 
         for nextgrid in currentstate.moves():
-
             nextgridtuple = grid_tuple(nextgrid)
-
             if nextgridtuple not in visited:
                 visited.add(nextgridtuple)
-
                 newpath = path + [nextgrid]
-
                 queue.append((nextgrid, newpath))
-
     return None
 
 def path_IDDFS(start, end, depthchoice=50):
-    
     for limit in range(depthchoice + 1):
         print(f"Searching with Depth Limit: {limit}") #here wwe can track progress
 
@@ -134,12 +121,10 @@ def path_IDDFS(start, end, depthchoice=50):
         
         if result_path is not None:
             return result_path
-            
     return None
 
 def path_astar(start, end):
     checks(start, end)
-    
     if start == end:
         return None
     
@@ -153,20 +138,13 @@ def path_astar(start, end):
         for row in grid:
             total_sum += sum(row)
         return total_sum
-    
-    
+
     initial_hnvalue = calculate_h(start)
     initial_gnvalue = 0
-    
     initial_fnvalue =  initial_hnvalue + initial_gnvalue
-    
     initial_path = [start]
-    
     start_tuple = grid_tuple(start)
-    
-
     queue = [(initial_fnvalue, initial_gnvalue, start_tuple, initial_path)]
-    
     g_costs = {start_tuple: initial_gnvalue}
 
     while queue:
@@ -178,7 +156,7 @@ def path_astar(start, end):
             if queue[i][0] == leastfn:
                 fnvalue, gnvalue, current_tuple, path = queue.pop(i) # Pop the state with the LOWEST fnvalue
                 current_grid = list(list(row) for row in current_tuple)
-                
+               
                 if current_grid == end:
                     return path
                 
@@ -188,18 +166,13 @@ def path_astar(start, end):
                     next_tuple = grid_tuple(next_grid)
             
                 new_gn_value = gnvalue + 1
-                
                 #check for shorter path to an already visited state
                 if next_tuple not in g_costs or new_gn_value < g_costs[next_tuple]:
-                    
                     g_costs[next_tuple] = new_gn_value
                     new_hn_value = calculate_h(next_grid)
                     new_fn_value = new_gn_value + new_hn_value
-                    
                     new_path = path + [next_grid]
-                    
                     heapq.heappush(queue, (new_fn_value, new_gn_value, next_tuple, new_path))
-
     return None
 
 def compare(start, end):
@@ -211,14 +184,11 @@ def compare(start, end):
     return print(f"bfs-{sys.getsizeof(bfs_result)} bytes; dfs-{sys.getsizeof(dfs_result)} bytes; iddfs-{sys.getsizeof(iddfs_result)} bytes; astar-{sys.getsizeof(astar_result)} bytes;")
 
 def safe_path(start, end):
-    
     """
     Through the combination of on;ly generating valid successors and A* algorithm,
     The A*'s core logic is best used to ensure that the path found is the best or shortest safe path '
     """
-
     checks(start, end)
-    
     if start == end:
         return None
     
@@ -231,16 +201,10 @@ def safe_path(start, end):
     
     initial_hnvalue = calculate_h(start)
     initial_gnvalue = 0
-    
     initial_fnvalue =  initial_hnvalue + initial_gnvalue
-    
     initial_path = [start]
-    
     start_tuple = grid_tuple(start)
-    
-
     queue = [(initial_fnvalue, initial_gnvalue, start_tuple, initial_path)]
-    
     g_costs = {start_tuple: initial_gnvalue}
 
     while queue:
@@ -266,14 +230,11 @@ def safe_path(start, end):
             if new_gn_value < g_costs.get(next_tuple, float('inf')):
                 
                 g_costs[next_tuple] = new_gn_value
-                
                 new_hn_value = calculate_h(next_grid)
                 new_fn_value = new_gn_value + new_hn_value
-                
                 new_path = path + [next_grid]
                 
                 heapq.heappush(queue, (new_fn_value, new_gn_value, next_tuple, new_path))
-
     return None
 
 def tester():
