@@ -123,7 +123,6 @@ class Agent:
             for move in self.get_all_valid_moves(state):
                 next_state = self.apply_action(move, state)
                 eval, _ = self.alphabeta(next_state, depth - 1, False, alpha, beta)
-                # print(f"MAX: move {move}, eval={eval}, current_best={max_eval}")
                 if eval > max_eval:
                     max_eval = eval
                     best_move = move
@@ -139,7 +138,6 @@ class Agent:
             for move in self.get_all_valid_moves(state):
                 next_state = self.apply_action(move, state)
                 eval, _ = self.minimax(next_state, depth - 1, True)
-                # print(f"MIN: move {move}, eval={eval}, current_best={min_eval}")
                 if eval < min_eval:
                     min_eval = eval
                     best_move = move
@@ -171,27 +169,30 @@ class Agent:
 
 
 def tester():
-    start = [
-        [1, 1, 1],
-        [0, 0, 0],
-    ]
-    start = [
-        [1, 1, 0, 0, 1],
-        [1, 1, 0, 0, 0],
-        [0, 0, 1, 1, 1],
-        [0, 0, 0, 1, 1]
-    ]
-    start = [
-        [0, 0, 0, 0, 0],
-        [1, 1, 0, 0, 0],
-        [0, 0, 0, 1, 1],
-        [0, 0, 0, 1, 1]
-    ]
+    # Example 1 - To use - (update Agent(2, 3)
+    # start = [
+    #     [1, 1, 1],
+    #     [0, 0, 0],
+    # ]
+    # Example 2 - To use - (update Agent(4, 5)
+    # start = [
+    #     [1, 1, 0, 0, 1],
+    #     [1, 1, 0, 0, 0],
+    #     [0, 0, 1, 1, 1],
+    #     [0, 0, 0, 1, 1]
+    # ]
+    # Example 3 - To use - (update Agent(4, 5)
+    # start = [
+    #     [0, 0, 0, 0, 0],
+    #     [1, 1, 0, 0, 0],
+    #     [0, 0, 0, 1, 1],
+    #     [0, 0, 0, 1, 1]
+    # ]
     start = [
         [1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1],
     ]
-    print(Agent((2, 5)).move(start))
+    print(Agent((2, 5)).move(start, "alphabeta"))
 
 if __name__ == '__main__':
     tester()

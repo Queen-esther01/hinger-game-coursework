@@ -13,22 +13,18 @@ from a3_agent import Agent
 def play(state, agentA, agentB):
     """Play a game of Hinger between two agents"""
     while agentA.game_over(state) == False and agentB.game_over(state) == False:
-        print(f'---------------')
         move_a = agentA.move(state, maximizing_player=True)
-        print(f'Agent A move: {move_a}')
         if agentA.is_hinger(state, move_a):
+            print('Agent A is hinger!', state)
             return 'Agent A'
         state_a = agentA.apply_action(move_a, state)
 
-
         move_b = agentB.move(state_a, maximizing_player=False)
-        print(f'Agent B move: {move_b}')
         if agentB.is_hinger(state_a, move_b):
             return 'Agent B'
         state_b = agentB.apply_action(move_b, state_a)
         state = state_b
 
-    print('Game is over!')
     return None
 
 def tester():

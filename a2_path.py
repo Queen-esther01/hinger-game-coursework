@@ -14,6 +14,9 @@ from copy import deepcopy
 from a1_state import State
 import heapq
 
+from a3_agent import Agent
+
+
 def grid_tuple(grid):
     return tuple(map(tuple, grid))
 
@@ -50,46 +53,40 @@ def dls_path(current_grid, end, limit, path):
                 return solution                    
         return None
 
-def path_BFS(start,end):
-    """ returns safe paths from start to end """
-    checks(start,end)
-    queue = [([0,0])]
-    visited = set()
-    flat = []
-    safe_moves = set()
-    regions = State(end).numRegions()
+
+def path_BFS(start, end):
+    """
+        Returns safe paths from start to end using Breadth First Search (BFS)
+        - Return if the corresponding end cell is larger than start cell, game is invalid
+        - Return if state is not binary, game is invalid
+    """
     for rowIndex in range(len(start)):
         for columnIndex in range(len(start[rowIndex])):
-            """ 
-                Extra Checks
-                - Return if the corresponding end cell is larger than start cell, game is invalid
-                - Return if state is not binary, game is invalid
-            """
-            # print(f"start: {start[rowIndex][columnIndex]} end: {end[rowIndex][columnIndex]}")
-            if start[rowIndex][columnIndex] < end[rowIndex][columnIndex]:
-                return None
-            if start[rowIndex][columnIndex] > 1 or end[rowIndex][columnIndex] > 1:
+            if start[rowIndex][columnIndex] < end[rowIndex][columnIndex] or start[rowIndex][columnIndex] > 1 or end[rowIndex][columnIndex] > 1:
                 return None
 
-            visited.add((rowIndex,columnIndex))
-            flat.append(start[rowIndex][columnIndex])
-            neighbors = State(start).getNeighbours(
-                rowIndex,
-                columnIndex
-            )
-            if start[rowIndex][columnIndex] > end[rowIndex][columnIndex]:
-                start[rowIndex][columnIndex] = start[rowIndex][columnIndex] - 1
-                if State(start).numRegions() > regions:
-                    return None
-                else:
-                    safe_moves.add((rowIndex,columnIndex))
+    if start == end:
+        return []
 
-            # print(f"neighbors: {neighbors}")
-            for neighbor in neighbors:
-                if neighbor not in visited:
-                    queue.append(neighbors)
-    print(f'safe moves: {safe_moves}')
-    return flat
+    start_regions = State(deepcopy(start)).numRegions()
+    queue = [(deepcopy(start), [])]
+    visited = []
+    agent = Agent((len(start), len(start[0])))
+    while len(queue) > 0:
+        state, path = queue.pop(0)
+        for move in agent.get_all_valid_moves(state):
+            next_state = agent.apply_action(move, state)
+            next_regions = State(deepcopy(next_state)).numRegions()
+            if next_regions > start_regions:
+                continue
+            if next_state in visited:
+                continue
+            visited.append(next_state)
+            new_path = path + [move]
+            if next_state == end:
+                return new_path
+            queue.append((next_state, new_path))
+    return None
 
 def path_DFS(start,end):
     checks(start, end)
@@ -248,18 +245,17 @@ def tester():
         [0, 0, 0]
     ]
     # print(path_BFS(start,end))
-    # print(path_DFS(start,end))
-    
-    a_safe_path = safe_path(start, end)
-    
-    if a_safe_path:
-        print("A* Safe Path Found (Minimum Moves):")
-        for i, grid in enumerate(a_safe_path):
-            print(f"\nMove {i+1}:")
-            for row in grid:
-                print(row)
-    else:
-        print("No solution found within the search space.")
+    print(path_DFS(start,end))
+    # a_safe_path = safe_path(start, end)
+    #
+    # if a_safe_path:
+    #     print("A* Safe Path Found (Minimum Moves):")
+    #     for i, grid in enumerate(a_safe_path):
+    #         print(f"\nMove {i+1}:")
+    #         for row in grid:
+    #             print(row)
+    # else:
+    #     print("No solution found within the search space.")
 
 if __name__ == '__main__':
     tester()
